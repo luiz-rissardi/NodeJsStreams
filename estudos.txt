@@ -1,0 +1,72 @@
+node streams são funções /  maneiras de processar uma grande quantiedade de dados sob 
+demanda. odne sempre tem uma fonte, um pipe de processamentos e por fim um lucar aonde
+será disponibilizado os dados 
+
+
+STREAMS NATIVOS  == >   
+    os streams nativos do javascript são o ( ReadbleStream, TransformStream e WritebleStream)onde 
+    ambos são inicializados por construtores.
+
+    ReadbleStream = >
+        principal metodo  = > Start(controller) =>  é a aonde os dados são gerados , para passa-los 
+        para serem transformados no pipeline , baste usar controller.enqueue("valor")
+
+    TransformStream =>
+        principal metodo de transformar os dados , ele recebe 3 parametros , a controller, o encoding e por fim
+        o pedaço de dados recebidos (chunk), para repassar para frente basta fazer o mesmo que o 
+        readble controller.enqueue("valor");
+
+    WritebleSTream = > 
+        o fim da stream onde ele já pega os dados todos transdformados e mapeados
+        somente para ser feito o seu uso , recebe como parametros os chunks transformados anteriormente
+
+
+ ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+STREAM -> modulos file system
+    para esses streams , há somente os modulos de leitura e gravação de arquivos,
+        
+        CreateReadbleStream 
+            ele recebe como parametro o nome do arquivo a ser lido , e passara os dados adiante
+
+        CreateWritebleStream
+            ele recebe como parametro o nome do arquivo a ser gravado os dados finais.
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+READBLESTREAM -> node:stream
+    
+    READBLE
+        ele pode ser instanciado com o "new" ou apena ser usado como função, recebe um objeto
+        que cotem os metodos "read" para efetuar a fonte de dados, para passar os dados a frente 
+        basta usr o thi.push(chunk) do proprio readble com o pedaçço de chunk desejado, quando usado o 
+        this.push(null) significa que a fonte de dados acabou.
+    
+    WRITEBLE
+        ele é usado para porver os dados finais do readble, pode ser instanciado ou usado como função normal
+        ele recebe um objeto que tem como metodo principal o "write" que recebe um pedaço do chunk do readble
+        transform, o enconding, e por fim uma função callback que qaundo chamada passara adiante o fluxo de dados
+
+    TRANSFORM
+        ele é usado para transformar os dados , ele pode ser instanciado ou usado como função
+        ele recebe um objeto com o metodo "transform" que recebe 3 parametros, o pedaço da chunk, 
+        o encoding e uma função callback que recebe masi 2 parametros, o primeiro é o erro ou null, e 
+        o segundo é os dados que seram passados adiante
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+    
+
+    node:stream/promises
+
+            PIPELINE
+                serve para dar continuidade aos fluxos do stream do node de maneira mais limpa
+                ele recebe varios parametros , que segue de READBLE -> TRANSFORM -> WRITEBLE
+
+                exemplo: await pipeline(readble
+                                        ,transform
+                                        ,transform
+                                        ,writeble)
