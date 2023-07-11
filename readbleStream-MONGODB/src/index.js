@@ -20,6 +20,8 @@ const schema = new Schema({
   },
 });
 
+
+
 const UserModel = model("usuario", schema);
 
 async function* getData() {
@@ -43,3 +45,4 @@ const writebleStream = new Writable({
 });
 
 await pipeline(readbleStream, writebleStream);
+
