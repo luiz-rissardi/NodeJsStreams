@@ -1,3 +1,5 @@
+
+//import { performance } from "node:perf_hooks";
 import { Readable, Transform, Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 import { setTimeout } from "node:timers/promises"
@@ -13,10 +15,10 @@ export class UserController {
         try {
             const { user } = await getBodyOfRequest(req)
             const result = this.#UserService.addUser({ user })
-            req.status(200).send(result);
-            res.ens();
+            res.status(200).send(result);
+            res.end();
         } catch (error) {
-            res.status(200).send("erro ao acessar UserService => " + error);
+            res.status(200).send("erro ao acessar UserService => " + error.message);
             res.end();
         }
     }
@@ -40,7 +42,7 @@ export class UserController {
             res.status(200).send(result);
             res.end();
         } catch (error) {
-            res.status(400).send("erro ao acessar UserService => " + error);
+            res.status(400).send("erro ao acessar UserService => " + error.message);
             res.end();
         }
     }
@@ -56,22 +58,26 @@ export class UserController {
                 sendData(res)
             )
         } catch (error) {
-            res.status(400).end("não foi possivel buscar os usuarios, verifique se o 'select' e 'where' foram informados ");
+            res.status(400).end("não foi possivel buscar os usuarios, verifique se o 'select' e 'where' foram informados =>" + error.message);
+            res.end();
         }
     }
 
     async findAllUser(req, res) {
         try {
             const stream = await this.#UserService.findUsers({ select: [], where: undefined });
-            pipeline(
-                Readable
-                    .from(JsonToString(stream)),
+            const start = performance.now();
+            await pipeline(
+                Readable.from(JsonToString(stream)),
+                groupBy(25),
                 toNdString(),
                 sendData(res)
-            )
+            );
+            const end = performance.now();
+            console.log(end - start);
         } catch (error) {
-            console.log(error);
-            res.status(400).end("não foi possivel buscar os usuarios, entre em contato com o suporte")
+            res.status(400).end("não foi possivel buscar os usuarios, entre em contato com o suporte => " + error.message);
+            res.end();
         }
     }
 }
@@ -85,18 +91,44 @@ async function* JsonToString(stream) {
 function toNdString() {
     return new Transform({
         async transform(chunk, enc, cb) {
-            await setTimeout(100);
             const data = chunk.toString().concat("\n");
             cb(null, data)
         }
     })
 }
 
-function sendData(res){
+function groupBy(sizeOfGroup) {
+    let isTree = 0;
+    const group = []
+    return new Transform({
+        transform(chunk, enc, cb) {
+            if (isTree % sizeOfGroup === 0 && isTree !== 0) {
+                isTree = 0;
+                this.push(JSON.stringify(group));
+                group.splice(0)
+                cb();
+            } else {
+                group.push(chunk.toString());
+                isTree ++;
+                cb();
+            }
+        },
+        flush(cb){
+            this.push(JSON.stringify(group))
+            cb();
+        }
+    })
+}
+
+function sendData(res) {
     return new Writable({
-        write(chunk,enc,cb){
+        write(chunk, enc, cb) {
             res.write(chunk.toString());
             cb()
+        },
+        final(cb) {
+           res.end();
+           cb();
         }
     })
 }
