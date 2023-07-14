@@ -1,6 +1,6 @@
 
 //import { performance } from "node:perf_hooks";
-import { Readable, Transform, Writable } from "node:stream"
+import { PassThrough, Readable, Transform, Writable } from "stream"
 import { pipeline } from "node:stream/promises"
 import { setTimeout } from "node:timers/promises"
 
@@ -54,6 +54,7 @@ export class UserController {
             pipeline(
                 Readable
                     .from(JsonToString(stream)),
+                groupBy(25),
                 toNdString(),
                 sendData(res)
             )
@@ -66,15 +67,12 @@ export class UserController {
     async findAllUser(req, res) {
         try {
             const stream = await this.#UserService.findUsers({ select: [], where: undefined });
-            const start = performance.now();
             await pipeline(
                 Readable.from(JsonToString(stream)),
                 groupBy(25),
                 toNdString(),
                 sendData(res)
             );
-            const end = performance.now();
-            console.log(end - start);
         } catch (error) {
             res.status(400).end("não foi possivel buscar os usuarios, entre em contato com o suporte => " + error.message);
             res.end();
@@ -90,7 +88,7 @@ async function* JsonToString(stream) {
 
 function toNdString() {
     return new Transform({
-        async transform(chunk, enc, cb) {
+        transform(chunk, enc, cb) {
             const data = chunk.toString().concat("\n");
             cb(null, data)
         }
@@ -109,11 +107,11 @@ function groupBy(sizeOfGroup) {
                 cb();
             } else {
                 group.push(chunk.toString());
-                isTree ++;
+                isTree++;
                 cb();
             }
         },
-        flush(cb){
+        flush(cb) {
             this.push(JSON.stringify(group))
             cb();
         }
@@ -127,8 +125,8 @@ function sendData(res) {
             cb()
         },
         final(cb) {
-           res.end();
-           cb();
+            res.end();
+            cb();
         }
     })
 }
@@ -140,3 +138,4 @@ async function getBodyOfRequest(request) {
     })
     return JSON.parse(body);
 }
+
