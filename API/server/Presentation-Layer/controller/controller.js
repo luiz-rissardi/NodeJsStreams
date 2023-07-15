@@ -11,45 +11,45 @@ export class UserController {
         this.#UserService = UserService;
     }
 
-    async createUser(req, res) {
+    createUser(req, res) {
         try {
-            const { user } = await getBodyOfRequest(req)
+            const { user } = req.body
             const result = this.#UserService.addUser({ user })
             res.status(200).send(result);
-            res.end();
         } catch (error) {
-            res.status(200).send("erro ao acessar UserService => " + error.message);
+            res.status(400).send("não foi possivel criar um usuario");
+        }finally{
             res.end();
         }
     }
 
-    async updateUsers(req, res) {
+    updateUsers(req, res) {
         try {
-            const { query, setValue } = await getBodyOfRequest(req)
+            const { query, setValue } = req.body;
             const result = this.#UserService.updadateUsers({ query, setValue })
             res.status(200).send(result);
-            res.end();
         } catch (error) {
             res.status(400).send("erro ao atualizar usuario");
+        }finally{
             res.end();
         }
     }
 
-    async deleteUsers(req, res) {
+    deleteUsers(req, res) {
         try {
-            const { query } = await getBodyOfRequest(req)
+            const { query } = req.body
             const result = this.#UserService.deleteUsers({ query });
             res.status(200).send(result);
-            res.end();
         } catch (error) {
-            res.status(400).send("erro ao acessar UserService => " + error.message);
-            res.end();
+            res.status(400).send("erro ao deletar usuario");
+        }finally{
+            res.end()
         }
     }
 
     async findUsers(req, res) {
         try {
-            const { where, select } = await getBodyOfRequest(req)
+            const { where, select } = req.body;
             const stream = await this.#UserService.findUsers({ select, where });
             pipeline(
                 Readable
@@ -60,6 +60,7 @@ export class UserController {
             )
         } catch (error) {
             res.status(400).end("não foi possivel buscar os usuarios, verifique se o 'select' e 'where' foram informados =>" + error.message);
+        } finally{
             res.end();
         }
     }
@@ -75,6 +76,7 @@ export class UserController {
             );
         } catch (error) {
             res.status(400).end("não foi possivel buscar os usuarios, entre em contato com o suporte => " + error.message);
+        }finally{
             res.end();
         }
     }
@@ -123,19 +125,9 @@ function sendData(res) {
         write(chunk, enc, cb) {
             res.write(chunk.toString());
             cb()
-        },
-        final(cb) {
-            res.end();
-            cb();
         }
     })
 }
 
-async function getBodyOfRequest(request) {
-    let body = "";
-    await request.on("data", (dados) => {
-        body += dados.toString();
-    })
-    return JSON.parse(body);
-}
+
 

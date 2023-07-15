@@ -3,6 +3,7 @@ import { pipeline } from "stream/promises";
 import http from "http";
 import { setTimeout } from "timers/promises";
 import axios from "axios";
+import { deepStrictEqual } from "assert";
 
 const app1 = (request, response) => {
     const readble = Readable.from(generate1());
@@ -105,3 +106,5 @@ function output() {
         }
     })
 }
+
+
