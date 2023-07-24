@@ -14,12 +14,7 @@ pause.addEventListener("click",()=>{
 })
 
 async function get(signal) {
-    const data = await fetch("http://localhost:3000/api/updateUsers", {
-        method: "PUT",
-        body:JSON.stringify({
-            query:{idade:{"$gt":20}},
-            setValue:{nome:"Antonyo"}
-        }),
+    const data = await fetch("http://localhost:4000/api/getAllUsers", {
         signal
     });
     const reader = data.body

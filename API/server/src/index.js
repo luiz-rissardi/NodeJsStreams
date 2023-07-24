@@ -19,7 +19,7 @@ class ServerAPI {
             app.use(cors());
             app.set("trust proxy", 1)
             app.use("/api",bodyParser, routes)
-            Server.listen("3000",() => {
+            Server.listen("4000",() => {
                 console.log("servidor rodando !");
             })
         } catch (error) {

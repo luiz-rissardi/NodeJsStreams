@@ -70,9 +70,9 @@ export class UserController {
             const stream = await this.#UserService.findUsers({ select: [], where: undefined });
             await pipeline(
                 Readable.from(JsonToString(stream)),
-                groupBy(25),
+                groupBy(20),
                 toNdString(),
-                sendData(res)
+                res
             );
         } catch (error) {
             res.status(400).end("não foi possivel buscar os usuarios, entre em contato com o suporte => " + error.message);
@@ -120,14 +120,6 @@ function groupBy(sizeOfGroup) {
     })
 }
 
-function sendData(res) {
-    return new Writable({
-        write(chunk, enc, cb) {
-            res.write(chunk.toString());
-            cb()
-        }
-    })
-}
 
 
 
