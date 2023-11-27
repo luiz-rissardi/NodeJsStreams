@@ -1,6 +1,6 @@
 import { createReadStream, createWriteStream } from "node:fs";
 import { Transform } from "node:stream";
-import { Transform } from "node:stream";
+
 
 function *generate(){
     for(let i=0;i<100;i++){
@@ -17,6 +17,7 @@ createReadStream("./readbleStream-FILE_SYSTEM/mock.json")
                 const { genero , ...rest} = el;
                 return rest
             })
+            console.log();
             cb(null,Buffer.from(JSON.stringify(data)))
         }
     }))

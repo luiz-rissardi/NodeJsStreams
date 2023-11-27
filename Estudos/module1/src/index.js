@@ -1,4 +1,4 @@
-import { Readable, Writable, Transform, PassThrough } from "stream";
+import { Readable, Writable, Transform, PassThrough, Duplex } from "stream";
 import { pipeline } from "stream/promises";
 import http from "http";
 import { setTimeout } from "timers/promises";

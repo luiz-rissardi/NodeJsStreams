@@ -106,12 +106,11 @@ function groupBy(sizeOfGroup) {
                 isTree = 0;
                 this.push(JSON.stringify(group));
                 group.splice(0)
-                cb();
             } else {
                 group.push(chunk.toString());
                 isTree++;
-                cb();
             }
+            cb();
         },
         flush(cb) {
             this.push(JSON.stringify(group))

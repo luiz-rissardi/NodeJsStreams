@@ -1,0 +1,13 @@
+package bookpackage;
+syntax = "proto3";
+
+service MessageService {
+    rpc sendMessage(Void) returns (Message);
+}
+
+message Void{}
+
+
+message Message {
+    string message = 1;
+}

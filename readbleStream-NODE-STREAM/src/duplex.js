@@ -19,6 +19,7 @@ const duplex = new Duplex({
         }
         this.push(null)
     },
+
     write(chunk,encoding,cb){
         const data = JSON.parse(chunk);
         console.log(data)
@@ -28,3 +29,4 @@ const duplex = new Duplex({
 
 
 
+duplex.pipe(duplex)

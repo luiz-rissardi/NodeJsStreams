@@ -30,7 +30,8 @@ Readable.toWeb(CreateStream())
         }
     }))
     .pipeTo(new WritableStream({
-        write(chunk){
+        write(chunk,ct){
+            
             console.log(chunk);
         }
     }))

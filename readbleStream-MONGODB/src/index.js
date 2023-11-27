@@ -2,6 +2,7 @@ import { connect, set, Schema, model } from "mongoose";
 import { Readable, Writable } from "stream";
 import { pipeline } from "stream/promises";
 
+
 set("strictQuery", true);
 await connect("mongodb+srv://rissardiluiz2006:LvlPUFGf1mLsL3V2@stream.6v3eenw.mongodb.net/usuario");
 
