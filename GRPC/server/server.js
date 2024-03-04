@@ -10,7 +10,7 @@ server.addService(MessageService.service,{
     sendMessage
 });
 
-server.bindAsync("127.0.0.1:50451",grpc.ServerCredentials.createInsecure(),(err,port) => {
+server.bindAsync("127.0.0.1:5451",grpc.ServerCredentials.createInsecure(),(err,port) => {
     if(err) throw err;
     console.log(`microservisse run at ${port}`);
     server.start();
